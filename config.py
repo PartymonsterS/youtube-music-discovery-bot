@@ -1,5 +1,5 @@
 BOT_TOKEN = "8632885771:AAGTS72_DIiTjwHa7fVNtq1ZT50QeC540C4"
 
 YT_HEADERS_FILE = "headers_auth.json"
-DATA_FILE = "data.json"
+DATA_FILE = "tracks.json"
 ADMIN_ID = ""
