@@ -1,22 +1,25 @@
 from ytmusicapi import YTMusic
-
-
+import random
+from config import YT_HEADERS_FILE
 class YoutubeMusic:
     def __init__(self, headers_file: str):
         self.headers_file = headers_file
         self.client = None
         self.tracks = []
+        self.tracks_data = {}
 
     def connect(self):
         self.client = YTMusic(self.headers_file)
 
-    def get_liked_songs(self):
-        if self.client is None:
-            raise ValueError("Сначала вызови connect()")
+    def sync_tracks(self):
+        self.tracks_data = self.client.get_liked_songs(limit=100)
+        self.tracks = self.tracks_data['tracks']
 
-        data = self.client.get_liked_songs(limit=5000)
-        self.tracks = data.get("tracks", [])
+    def get_liked_songs(self):
         return self.tracks
+
+    def get_liked_random_song(self):
+        return random.choice(self.tracks)
 
     def get_tracks_count(self):
         return len(self.tracks)
@@ -36,3 +39,6 @@ class YoutubeMusic:
             preview.append(f"{artist_name} — {title}")
 
         return preview
+
+
+ym_client = YoutubeMusic(YT_HEADERS_FILE)
