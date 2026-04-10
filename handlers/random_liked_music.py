@@ -92,7 +92,7 @@ async def command_playlist(message: Message):
 
 
 @router.callback_query(F.data == "random_liked_track")
-async def random_track_callback_handler(callback: CallbackQuery):
+async def random_liked_track_callback_handler(callback: CallbackQuery):
     try:
         random_track = ym_client.get_liked_random()
 
@@ -105,16 +105,20 @@ async def random_track_callback_handler(callback: CallbackQuery):
         video_id = random_track.get("videoId")
 
         if not video_id:
-            await callback.message.answer(f"🎵 {artist} — {title}\nСсылка не найдена")
-            await callback.answer()
+            await callback.answer("Ссылка не найдена", show_alert=True)
             return
 
         url = f"https://music.youtube.com/watch?v={video_id}"
-
         owner = get_setting("owner")
+
+        try:
+            await callback.message.delete()
+        except Exception:
+            pass
+
         await callback.message.answer(
             f"🎲 <b>Случайный трек</b>\n"
-            f"из понравившихся <b>owner</b>\n\n"
+            f"из понравившихся <b>{owner}</b>\n\n"
             f"🎵 <b>{artist}</b> — <a href='{url}'>{title}</a>",
             reply_markup=main_keyboard,
             parse_mode="HTML",
@@ -124,7 +128,6 @@ async def random_track_callback_handler(callback: CallbackQuery):
         await callback.message.answer(f"Ошибка: {e}")
 
     await callback.answer()
-
 
 
 @router.callback_query(F.data == "random_liked_playlist")
@@ -175,39 +178,3 @@ async def random_liked_playlist_callback_handler(callback: CallbackQuery):
 
     await callback.answer()
 
-
-@router.callback_query(F.data == "random_track")
-async def random_liked_track_callback_handler(callback: CallbackQuery):
-    try:
-        random_track = ym_client.get_liked_random()
-
-        title = random_track.get("title", "Unknown title")
-        artist = (
-            random_track["artists"][0]["name"]
-            if random_track.get("artists")
-            else "Unknown artist"
-        )
-        video_id = random_track.get("videoId")
-
-        if not video_id:
-            await callback.answer("Ссылка не найдена", show_alert=True)
-            return
-
-        url = f"https://music.youtube.com/watch?v={video_id}"
-
-        await callback.message.delete()
-
-        owner = get_setting("owner")
-        await callback.message.answer(
-            f"🎲 <b>Случайный трек</b>\n"
-            f"из понравившихся <b>{owner}</b>\n\n"
-            f"🎵 <b>{artist}</b> — <a href='{url}'>{title}</a>",
-            reply_markup=main_keyboard,
-            parse_mode="HTML",
-        )
-
-        await callback.answer()
-
-    except Exception as e:
-        await callback.answer("Ошибка", show_alert=True)
-        await callback.message.answer(f"Ошибка: {e}", reply_markup=back_to_menu_keyboard)

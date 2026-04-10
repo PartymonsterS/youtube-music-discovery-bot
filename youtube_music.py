@@ -142,4 +142,51 @@ class YoutubeMusic:
 
         return tracks
 
+    def search_tracks_for_flow(self, query: str, limit: int = 20):
+        if self.client is None:
+            raise ValueError("Сначала вызови connect()")
+
+        videos = self.client.search(query, filter="videos", limit=limit * 2)
+        songs = self.client.search(query, filter="songs", limit=limit)
+
+        results = videos + songs
+
+        tracks = []
+        seen_ids = set()
+
+        for item in results:
+            video_id = item.get("videoId")
+
+            if not video_id or video_id in seen_ids:
+                continue
+
+            # ---- фильтр длительности ----
+            duration = item.get("duration")
+            if duration:
+                parts = duration.split(":")
+                seconds = 0
+                for part in parts:
+                    seconds = seconds * 60 + int(part)
+
+                if seconds < 60 or seconds > 480:
+                    continue
+            # -----------------------------
+
+            title = item.get("title", "Unknown title")
+            artists = item.get("artists", [])
+            artist_name = artists[0].get("name", "Unknown artist") if artists else "Unknown artist"
+
+            tracks.append({
+                "title": title,
+                "artist": artist_name,
+                "videoId": video_id,
+                "url": f"https://music.youtube.com/watch?v={video_id}"
+            })
+
+            seen_ids.add(video_id)
+
+            if len(tracks) >= limit:
+                break
+
+        return tracks
 ym_client = YoutubeMusic(YT_HEADERS_FILE)

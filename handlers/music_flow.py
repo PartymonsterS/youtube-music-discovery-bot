@@ -52,7 +52,7 @@ async def music_flow_query_handler(message: Message, state: FSMContext):
     ym_client.connect()
     flow_limit = get_setting("music_flow_search_limit")
 
-    tracks = ym_client.search_tracks(query=query, limit=flow_limit)
+    tracks = ym_client.search_tracks_for_flow(query=query, limit=flow_limit)
 
     if not tracks:
         await message.answer("Ничего не найдено.")

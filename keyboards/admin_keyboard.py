@@ -21,6 +21,24 @@ admin_keyboard = InlineKeyboardMarkup(
         ],
         [
             InlineKeyboardButton(
+                text="🔑 Set Authorization",
+                callback_data="admin_set_authorization"
+            )
+        ],
+        [
+            InlineKeyboardButton(
+                text="🍪 Set Cookie",
+                callback_data="admin_set_cookie"
+            )
+        ],
+        [
+            InlineKeyboardButton(
+                text="🖥 Set User-Agent",
+                callback_data="admin_set_user_agent"
+            )
+        ],
+        [
+            InlineKeyboardButton(
                 text="⬅️ Back to menu",
                 callback_data="back_to_menu"
             )
