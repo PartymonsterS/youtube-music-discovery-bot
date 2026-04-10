@@ -488,7 +488,7 @@ async def next_genre_track_callback(callback: CallbackQuery, state: FSMContext):
     if not available_tracks:
         await callback.message.delete()
         await callback.message.answer(
-            f"🎼 <b>Genre Next:</b> {query}\n\n"
+            f"🎼 <b>Music flow :</b> {query}\n\n"
             "Треки по этому тегу закончились.",
             parse_mode="HTML",
             reply_markup=main_keyboard

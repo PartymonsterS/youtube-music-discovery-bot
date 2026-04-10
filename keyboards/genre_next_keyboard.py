@@ -1,7 +1,4 @@
-from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
-
-
-from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
+from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton, CallbackQuery
 
 
 def genre_next_keyboard(query: str):
@@ -10,7 +7,7 @@ def genre_next_keyboard(query: str):
             [
                 InlineKeyboardButton(
                     text=f"➡️ Next: {query}",
-                    callback_data="next_genre_track"
+                    callback_data="music_flow_next"
                 )
             ],
             [
