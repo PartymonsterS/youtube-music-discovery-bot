@@ -9,7 +9,7 @@ class YoutubeMusic:
     def __init__(self, headers_file: str):
         self.headers_file = headers_file
         self.client = None
-        self.data_file = "data.json"
+        self.data_file = "data/tracks.json"
 
     def connect(self):
         self.client = YTMusic(self.headers_file)

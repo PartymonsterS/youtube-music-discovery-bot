@@ -10,6 +10,9 @@ from keyboards.main_keyboard import main_keyboard
 from keyboards.back_to_menu_keyboard import back_to_menu_keyboard
 from youtube_music import ym_client
 import random
+from services.settings_service import get_setting
+
+
 router = Router()
 
 
@@ -32,9 +35,10 @@ async def random_track_command_handler(message: Message):
 
         url = f"https://music.youtube.com/watch?v={video_id}"
 
+        owner = get_setting("owner")
         await message.answer(
             f"🎲 <b>Случайный трек</b>\n"
-            f"из понравившихся <b>Skibs505</b>\n\n"
+            f"из понравившихся <b>{owner}</b>\n\n"
             f"🎵 <b>{artist}</b> — <a href='{url}'>{title}</a>",
             reply_markup=main_keyboard,
             parse_mode="HTML",
@@ -52,7 +56,9 @@ async def command_playlist(message: Message):
             await message.answer("Нет треков. Сначала сделай /sync")
             return
 
-        random_tracks = random.sample(tracks, min(10, len(tracks)))
+        playlist_size = get_setting("random_playlist_size")
+        random_tracks = random.sample(tracks, min(playlist_size, len(tracks)))
+
         lines = []
 
         for i, track in enumerate(random_tracks, start=1):
@@ -72,9 +78,10 @@ async def command_playlist(message: Message):
 
         text = "\n\n".join(lines)
 
+        owner = get_setting("owner")
         await message.answer(
             f"🎶 <b>Случайный плейлист</b>\n"
-            f"из понравившихся <b>Skibs505</b>\n\n{text}",
+            f"из понравившихся <b>{owner}</b>\n\n{text}",
             parse_mode="HTML",
             reply_markup=main_keyboard,
             disable_web_page_preview=True
@@ -104,9 +111,10 @@ async def random_track_callback_handler(callback: CallbackQuery):
 
         url = f"https://music.youtube.com/watch?v={video_id}"
 
+        owner = get_setting("owner")
         await callback.message.answer(
             f"🎲 <b>Случайный трек</b>\n"
-            f"из понравившихся <b>skibs505</b>\n\n"
+            f"из понравившихся <b>owner</b>\n\n"
             f"🎵 <b>{artist}</b> — <a href='{url}'>{title}</a>",
             reply_markup=main_keyboard,
             parse_mode="HTML",
@@ -129,7 +137,8 @@ async def random_liked_playlist_callback_handler(callback: CallbackQuery):
             await callback.answer()
             return
 
-        random_tracks = random.sample(tracks, min(10, len(tracks)))
+        playlist_size = get_setting("random_playlist_size")
+        random_tracks = random.sample(tracks, min(playlist_size, len(tracks)))
         lines = []
 
         for i, track in enumerate(random_tracks, start=1):
@@ -152,9 +161,10 @@ async def random_liked_playlist_callback_handler(callback: CallbackQuery):
 
         text = "\n\n".join(lines)
 
+        owner = get_setting("owner")
         await callback.message.answer(
             f"🎶 <b>Случайный плейлист</b>\n"
-            f"из понравившихся <b>skibs505</b>\n\n{text}",
+            f"из понравившихся <b>{owner}</b>\n\n{text}",
             parse_mode="HTML",
             reply_markup=main_keyboard,
             disable_web_page_preview=True
@@ -187,9 +197,10 @@ async def random_liked_track_callback_handler(callback: CallbackQuery):
 
         await callback.message.delete()
 
+        owner = get_setting("owner")
         await callback.message.answer(
             f"🎲 <b>Случайный трек</b>\n"
-            f"из понравившихся <b>skibs505</b>\n\n"
+            f"из понравившихся <b>{owner}</b>\n\n"
             f"🎵 <b>{artist}</b> — <a href='{url}'>{title}</a>",
             reply_markup=main_keyboard,
             parse_mode="HTML",

@@ -9,6 +9,7 @@ from keyboards.main_keyboard import main_keyboard
 from keyboards.back_to_menu_keyboard import back_to_menu_keyboard
 from states.genre_next import GenreNextState
 from youtube_music import ym_client
+from services.settings_service import get_setting
 
 router = Router()
 
@@ -49,7 +50,9 @@ async def music_flow_query_handler(message: Message, state: FSMContext):
         return
 
     ym_client.connect()
-    tracks = ym_client.search_tracks(query=query, limit=50)
+    flow_limit = get_setting("music_flow_search_limit")
+
+    tracks = ym_client.search_tracks(query=query, limit=flow_limit)
 
     if not tracks:
         await message.answer("Ничего не найдено.")

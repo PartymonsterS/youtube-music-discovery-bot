@@ -1,6 +1,6 @@
 import json
 
-with open("data.json", "r", encoding="utf-8") as f:
+with open("data/tracks.json", "r", encoding="utf-8") as f:
     tracks = json.load(f)
 
 seen = set()

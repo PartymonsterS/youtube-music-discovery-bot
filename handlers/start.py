@@ -21,7 +21,6 @@ async def start_handler(message: Message):
         "Выбери действие кнопкой ниже.",
         reply_markup=main_keyboard
     )
-    await message.answer(f"Твой ID: {message.from_user.id}")
 
 
 @router.callback_query(F.data == "back_to_menu")
