@@ -7,7 +7,7 @@ main_keyboard = InlineKeyboardMarkup(
     inline_keyboard=[
         [
             InlineKeyboardButton(
-                text="➡️ Next Track",
+                text="🎲 Random Track",
                 callback_data="next_track"
             ),
         ],
@@ -17,13 +17,13 @@ main_keyboard = InlineKeyboardMarkup(
                 callback_data="playlist"
             ),
             InlineKeyboardButton(
-                text="🎼 Genre Playlist",
+                text="🔎 Search Playlist",
                 callback_data="genre_playlist"
             ),
         ],
         [
             InlineKeyboardButton(
-                text="🎼 Genre Next",
+                text="🎧 Music Flow",
                 callback_data="genre_next"
             ),
         ],

@@ -1,5 +1,4 @@
 import random
-import html
 from aiogram import Router, F
 from aiogram.filters import Command
 from aiogram.types import Message, CallbackQuery
@@ -34,17 +33,17 @@ def format_track_html(track: dict, index: int | None = None) -> str:
 
 @router.message(Command("start"))
 async def start(message: Message):
-    await message.answer(
-        "Привет 🎵\n\n"
-        "Я бот для поиска и открытия музыки из YouTube Music.\n\n"
-        "Я умею:\n"
-        "• показывать случайные треки из твоей библиотеки\n"
-        "• создавать случайные плейлисты\n"
-        "• создавать плейлисты по жанру или тегу\n"
-        "• листать треки по жанру как радио\n\n"
-        "Выбери действие кнопкой ниже или напиши /help",
-        reply_markup=main_keyboard
-    )
+        await message.answer(
+            "Привет 🎵\n\n"
+            "Я бот для поиска и открытия музыки из YouTube Music.\n\n"
+            "Я умею:\n"
+            "• показывать случайные треки из библиотеки skibs505\n"
+            "• создавать случайные плейлисты из понравившихся\n"
+            "• создавать плейлисты по жанру, тегу или исполнителю\n"
+            "• листать музыку как бесконечный поток (Music Flow)\n\n"
+            "Выбери действие кнопкой ниже.",
+            reply_markup=main_keyboard
+        )
 
 @router.message(Command("help"))
 async def help_command(message: Message):
@@ -113,10 +112,12 @@ async def rand_command(message: Message):
         url = f"https://music.youtube.com/watch?v={video_id}"
 
         await message.answer(
-            f"🎲 <b>Твой случайный трек</b>\n\n"
+            f"🎲 <b>Случайный трек</b>\n"
+            f"из понравившихся <b>Skibs505</b>\n\n"
             f"🎵 <b>{artist}</b> — <a href='{url}'>{title}</a>",
             reply_markup=main_keyboard,
-            parse_mode="HTML"
+            parse_mode="HTML",
+            disable_web_page_preview=True
         )
 
     except Exception as e:
@@ -153,7 +154,8 @@ async def command_playlist(message: Message):
         text = "\n\n".join(lines)
 
         await message.answer(
-            f"🎶 <b>Твой случайный плейлист</b>\n\n{text}",
+            f"🎶 <b>Случайный плейлист</b>\n"
+            f"из понравившихся <b>Skibs505</b>\n\n{text}",
             parse_mode="HTML",
             reply_markup=main_keyboard,
             disable_web_page_preview=True
@@ -234,12 +236,14 @@ async def rand_callback(callback: CallbackQuery):
         url = f"https://music.youtube.com/watch?v={video_id}"
 
         await callback.message.answer(
-            f"🎲 <b>Случайный трек</b>\n\n"
+            f"🎲 <b>Случайный трек</b>\n"
+            f"из понравившихся <b>Skibs505</b>\n\n"
             f"🎵 <b>{artist}</b> — <a href='{url}'>{title}</a>",
             reply_markup=main_keyboard,
             parse_mode="HTML",
             disable_web_page_preview=True
         )
+
     except Exception as e:
         await callback.message.answer(f"Ошибка: {e}")
 
@@ -276,9 +280,10 @@ async def playlist_callback(callback: CallbackQuery):
         text = "\n\n".join(lines)
 
         await callback.message.answer(
-            f"🎶 <b>Твой случайный плейлист</b>\n\n{text}",
-            reply_markup=main_keyboard,
+            f"🎶 <b>Случайный плейлист</b>\n"
+            f"из понравившихся <b>skibs505</b>\n\n{text}",
             parse_mode="HTML",
+            reply_markup=main_keyboard,
             disable_web_page_preview=True
         )
 
@@ -306,10 +311,11 @@ async def next_track_callback(callback: CallbackQuery):
         await callback.message.delete()
 
         await callback.message.answer(
-            f"🎲 <b>Случайный трек</b>\n\n"
+            f"🎲 <b>Случайный трек</b>\n"
+            f"из понравившихся <b>skibs505</b>\n\n"
             f"🎵 <b>{artist}</b> — <a href='{url}'>{title}</a>",
             reply_markup=main_keyboard,
-            parse_mode="HTML"
+            parse_mode="HTML",
         )
 
         await callback.answer()
@@ -324,12 +330,16 @@ async def genre_playlist_callback(callback: CallbackQuery, state: FSMContext):
     await state.set_state(SearchMusicState.waiting_query)
 
     await callback.message.answer(
-        "Напиши жанр или тег для поиска.\n\n"
+        "🎼 <b>Создание плейлиста</b>\n\n"
+        "Напиши жанр, тег, исполнителя или описание музыки.\n\n"
         "Например:\n"
-        "phonk\n"
-        "jazz\n"
-        "rock\n"
-        "nightcore"
+        "• phonk\n"
+        "• funky jazz\n"
+        "• sad piano\n"
+        "• nightcore\n"
+        "• Arctic Monkeys\n"
+        "• aggressive gym music",
+        parse_mode="HTML"
     )
 
     await callback.answer()
@@ -361,13 +371,16 @@ async def search_count_handler(message: Message, state: FSMContext):
         return
 
     count = int(text)
+    if count < 1 or count > 30:
+        await message.answer("Можно показать от 1 до 30 треков.", reply_markup=main_keyboard)
+        return
 
     data = await state.get_data()
     query = data["query"]
 
     ym_client.connect()
 
-    found_tracks = ym_client.search_tracks(query=query, limit=50)
+    found_tracks = ym_client.search_tracks(query=query, limit=count * 5)
 
     if not found_tracks:
         await message.answer("Ничего не найдено.")
@@ -395,22 +408,31 @@ async def search_count_handler(message: Message, state: FSMContext):
     await state.clear()
 
 
+
 @router.callback_query(F.data == "genre_next")
 async def genre_next_callback(callback: CallbackQuery, state: FSMContext):
     await state.set_state(GenreNextState.waiting_query)
 
     await callback.message.answer(
-        "🎼 <b>Genre Next mode</b>\n\n"
-        "Напиши жанр или тег.\n\n"
-        "Например:\n"
-        "phonk\n"
-        "jazz\n"
-        "rock\n"
-        "nightcore",
-        parse_mode="HTML"
-    )
+            "🎧 <b>Music Flow</b>\n\n"
+            "Напиши, что хочешь послушать.\n\n"
+            "Можно указать:\n"
+            "• жанр\n"
+            "• тег\n"
+            "• исполнителя\n"
+            "• настроение\n\n"
+            "<i>Примеры:</i>\n"
+            "phonk\n"
+            "funky jazz\n"
+            "Arctic Monkeys\n"
+            "sad piano\n"
+            "gym music\n\n"
+            "➡️ После этого листай музыку кнопкой <b>Next</b>",
+            parse_mode="HTML"
+        )
 
     await callback.answer()
+
 
 @router.message(GenreNextState.waiting_query)
 async def genre_next_query_handler(message: Message, state: FSMContext):
@@ -438,7 +460,7 @@ async def genre_next_query_handler(message: Message, state: FSMContext):
     )
 
     await message.answer(
-        f"🎼 <b>Genre Next:</b> {query}\n\n"
+        f"🎧 <b>Music Flow:</b> {query}\n\n"
         f"🎵 <b>{first_track['artist']}</b> — "
         f"<a href='{first_track['url']}'>{first_track['title']}</a>",
         parse_mode="HTML",
@@ -501,12 +523,13 @@ async def back_to_menu_callback(callback: CallbackQuery, state: FSMContext):
 
     await callback.message.answer(
         "Привет 🎵\n\n"
-        "Я бот для анализа твоей библиотеки YouTube Music.\n\n"
+        "Я бот для поиска и открытия музыки из YouTube Music.\n\n"
         "Я умею:\n"
-        "• синхронизировать понравившиеся треки\n"
-        "• выбирать случайный трек\n"
-        "• создавать случайный плейлист\n\n"
-        "Выбери действие кнопкой ниже или напиши /help",
+        "• показывать случайные треки из библиотеки skibs505\n"
+        "• создавать случайные плейлисты из библиотеки \n"
+        "• создавать плейлисты по жанру, тегу или исполнителю\n"
+        "• листать музыку как бесконечный поток (Music Flow)\n\n"
+        "Выбери действие кнопкой ниже.",
         reply_markup=main_keyboard
     )
 

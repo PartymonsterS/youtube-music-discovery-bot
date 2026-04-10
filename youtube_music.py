@@ -107,11 +107,19 @@ class YoutubeMusic:
         if self.client is None:
             raise ValueError("Сначала вызови connect()")
 
-        results = self.client.search(query, filter="songs", limit=limit)
+        songs = self.client.search(query, filter="songs", limit=limit * 2)
+        videos = self.client.search(query, filter="videos", limit=limit * 2)
+
+        results = songs + videos
 
         tracks = []
+        seen_ids = set()
+
         for item in results:
             video_id = item.get("videoId")
+            if not video_id or video_id in seen_ids:
+                continue
+
             title = item.get("title", "Unknown title")
             artists = item.get("artists", [])
 
@@ -120,15 +128,18 @@ class YoutubeMusic:
             else:
                 artist_name = "Unknown artist"
 
-            if video_id:
-                tracks.append({
-                    "title": title,
-                    "artist": artist_name,
-                    "videoId": video_id,
-                    "url": f"https://music.youtube.com/watch?v={video_id}"
-                })
+            tracks.append({
+                "title": title,
+                "artist": artist_name,
+                "videoId": video_id,
+                "url": f"https://music.youtube.com/watch?v={video_id}"
+            })
+
+            seen_ids.add(video_id)
+
+            if len(tracks) >= limit:
+                break
 
         return tracks
-
 
 ym_client = YoutubeMusic(YT_HEADERS_FILE)
