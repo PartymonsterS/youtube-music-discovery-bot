@@ -39,6 +39,12 @@ admin_keyboard = InlineKeyboardMarkup(
         ],
         [
             InlineKeyboardButton(
+                text="👤 Set AuthUser",
+                callback_data="admin_set_auth_user"
+            )
+        ],
+        [
+            InlineKeyboardButton(
                 text="⬅️ Back to menu",
                 callback_data="back_to_menu"
             )
