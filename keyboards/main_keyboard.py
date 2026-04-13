@@ -26,6 +26,12 @@ main_keyboard = InlineKeyboardMarkup(
         ],
         [
             InlineKeyboardButton(
+                text="📚 Playlist Discovery",
+                callback_data="playlist_discovery"
+            ),
+        ],
+        [
+            InlineKeyboardButton(
                 text="ℹ️ Help",
                 callback_data="help"
             ),

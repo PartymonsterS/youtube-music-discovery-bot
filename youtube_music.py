@@ -189,4 +189,57 @@ class YoutubeMusic:
                 break
 
         return tracks
+
+    def search_community_playlists(self, query: str, limit: int = 20):
+        if self.client is None:
+            raise ValueError("Сначала вызови connect()")
+
+        results = self.client.search(query, filter="playlists", limit=limit)
+
+        playlists = []
+        seen_ids = set()
+
+        for item in results:
+            if item.get("resultType") != "playlist":
+                continue
+
+            playlist_id = item.get("playlistId")
+            browse_id = item.get("browseId")
+
+            if not playlist_id and browse_id and browse_id.startswith("VL"):
+                playlist_id = browse_id[2:]
+
+            if not playlist_id or playlist_id in seen_ids:
+                continue
+
+            title = item.get("title", "Unknown title")
+
+            author_data = item.get("author")
+            if isinstance(author_data, list):
+                author = author_data[0].get("name", "Unknown") if author_data else "Unknown"
+            elif isinstance(author_data, dict):
+                author = author_data.get("name", "Unknown")
+            elif isinstance(author_data, str):
+                author = author_data
+            else:
+                author = "Unknown"
+
+            count = item.get("itemCount", "Unknown")
+
+            playlists.append({
+                "title": title,
+                "author": author,
+                "count": count,
+                "playlistId": playlist_id,
+                "url": f"https://music.youtube.com/playlist?list={playlist_id}"
+            })
+
+            seen_ids.add(playlist_id)
+
+            if len(playlists) >= limit:
+                break
+
+        return playlists
+
+
 ym_client = YoutubeMusic(YT_HEADERS_FILE)

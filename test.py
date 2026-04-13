@@ -1,28 +1,18 @@
-import json
+from ytmusicapi import YTMusic
+from config import YT_HEADERS_FILE
 
-with open("data/tracks.json", "r", encoding="utf-8") as f:
-    tracks = json.load(f)
+yt = YTMusic(YT_HEADERS_FILE)
 
-seen = set()
-duplicates = []
+query = "gym phonk"
 
-for i, track in enumerate(tracks, start=1):
+results = yt.search(query, limit=20)
 
-    title = track.get("title", "Unknown title")
-    video_id = track.get("videoId")
-
-    print(f"{i}. {title}")
-
-    if video_id in seen:
-        duplicates.append(video_id)
-    else:
-        seen.add(video_id)
-
-print("\nВсего треков:", len(tracks))
-print("Уникальных videoId:", len(seen))
-
-if duplicates:
-    print("Найдены дубликаты:", len(duplicates))
-else:
-    print("Дубликатов нет ✅")
-
+for i, item in enumerate(results, start=1):
+    print(f"\n--- {i} ---")
+    print("title:", item.get("title"))
+    print("resultType:", item.get("resultType"))
+    print("playlistId:", item.get("playlistId"))
+    print("videoId:", item.get("videoId"))
+    print("author:", item.get("author"))
+    print("itemCount:", item.get("itemCount"))
+    print("raw:", item)
