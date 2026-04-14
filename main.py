@@ -38,8 +38,6 @@ async def on_startup(bot):
 
 
 async def on_shutdown(bot):
-    if WEBHOOK_BASE_URL:
-        await bot.delete_webhook()
     await bot.session.close()
 
 
