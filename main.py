@@ -13,8 +13,7 @@ from handlers.admin_settings import router as admin_settings_router
 from handlers.community_playlists import router as community_playlists_router
 
 async def main():
-    dp.include_router(start_router)
-    dp.include_router(help_router)
+    dp.include_router(start_router).include_router(help_router)
     dp.include_router(sync_router)
     dp.include_router(random_liked_music_router)
     dp.include_router(playlists_router)

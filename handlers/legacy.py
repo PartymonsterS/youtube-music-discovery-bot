@@ -12,9 +12,6 @@ from states.genre_playlist import SearchMusicState
 from states.genre_next import GenreNextState
 from keyboards.genre_next_keyboard import genre_next_keyboard
 
-router = Router()
-
-
 def format_track_html(track: dict, index: int | None = None) -> str:
     title = track.get("title", "Unknown title")
     artist = track["artists"][0]["name"] if track.get("artists") else "Unknown artist"

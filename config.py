@@ -1,5 +1,4 @@
-BOT_TOKEN = "8632885771:AAGTS72_DIiTjwHa7fVNtq1ZT50QeC540C4"
+import os
 
-YT_HEADERS_FILE = "headers_auth.json"
-DATA_FILE = "data/tracks.json"
-ADMIN_ID = "1403457117"
+BOT_TOKEN = os.getenv("BOT_TOKEN")
+ADMIN_ID = os.getenv("ADMIN_ID")
